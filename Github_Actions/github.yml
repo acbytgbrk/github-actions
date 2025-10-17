@@ -1,0 +1,63 @@
+//
+//  .yml
+//  Github_Actions
+//
+//  Created by Tuğberk Acabey on 16.10.2025.
+//
+name: Github Actions Workflow
+
+on:
+    push:
+        branches:
+        - 'main'
+        - 'master'
+    
+    pull_request:
+     types:
+       - open
+     branches:
+       - 'main'
+    
+    workflow_call:
+      inputs:
+        username:
+         type: string
+         default: 'ahmet'
+         required: false
+         
+    workflow_dispatch:
+      inputs:
+        username:
+        type: string
+        default: 'ahmet'
+        required: false
+env:
+  var1: 'deg1'
+
+jobs:
+  job1:
+    name: Job1
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'main' }}
+    
+    step1:
+      - name: Step1
+        run: pwd
+      - name: Step2
+        shell: bash
+        run: |
+           whoami
+           ls
+           echo "$var1"
+           echo "${{env.var1 == 'main'}}"
+    
+        step2:
+      - name: Step1
+        run: pwd
+      - name: Step2
+        shell: bash
+        run: |
+           whoami
+           ls
+           echo "$var1"
+           echo "${{env.var1 == 'main'}}"
