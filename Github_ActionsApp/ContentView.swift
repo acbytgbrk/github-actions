@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  Github_Actions
+//  Github_ActionsApp
 //
-//  Created by Tuğberk Acabey on 16.10.2025.
+//  Created by Tuğberk Acabey on 23.10.2025.
 //
 
 import SwiftUI

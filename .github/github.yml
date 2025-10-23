@@ -1,8 +1,85 @@
-//
-//  .yml
-//  Github_Actions
-//
-//  Created by Tuğberk Acabey on 16.10.2025.
-//
 name: Github Actions Workflow
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Auto Assign & Request Reviews 🤖
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+
+            console.log(`🟣 Processing PR #${pr.number} by @${author}`);
+
+            // 1️⃣ Assign PR to author
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                assignees: [author]
+              });
+              console.log(`✅ Assigned PR to author: @${author}`);
+            } catch (error) {
+              console.log(`⚠️ Could not assign PR: ${error.message}`);
+            }
+
+            // 2️⃣ Always request reviews from main reviewers
+            const reviewers = ['acbytgbrk', 'fatihcimen'];
+
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers
+              });
+              console.log(`✅ Requested reviews from: ${reviewers.join(', ')}`);
+            } catch (error) {
+              console.log(`⚠️ Error requesting reviewers: ${error.message}`);
+            }
+
+            // 3️⃣ Add a friendly comment when PR is opened
+            if (context.payload.action === 'opened') {
+              const body = [
+                `👋 Hey @${author}, welcome to the PR!`,
+                `This pull request will be reviewed by our main reviewers: **@acbytgbrk** and **@fatihcimen**.`,
+                ``,
+                `📊 **Quick stats:**`,
+                `• Title: ${pr.title}`,
+                `• Branch: ${pr.head.ref}`,
+                `• Changes: +${pr.additions} / -${pr.deletions}`,
+                ``,
+                `_Auto-review assignment by GitHub Actions 🤖_`
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body
+              });
+
+              console.log('💬 Added welcome comment to PR.');
+            }
 

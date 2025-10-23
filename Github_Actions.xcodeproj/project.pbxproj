@@ -6,14 +6,37 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A17FEA312EAA101A0070100D /* ContentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18941E32EA9964200FF5C55 /* ContentDetailView.swift */; };
+		A17FEA322EAA101A0070100D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18941E22EA9963400FF5C55 /* ContentView.swift */; };
+		A17FEA432EAA134D0070100D /* ContentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18941E32EA9964200FF5C55 /* ContentDetailView.swift */; };
+		A17FEA442EAA134D0070100D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18941E22EA9963400FF5C55 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A111DEEA2EA0FC4E00276835 /* Github_Actions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Github_Actions.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A17FEA382EAA12F60070100D /* Github_ActionsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Github_ActionsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A18941E22EA9963400FF5C55 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A18941E32EA9964200FF5C55 /* ContentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A17FEA452EAA13540070100D /* Exceptions for "Github_ActionsApp" folder in "Github_ActionsApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ContentView.swift,
+			);
+			target = A17FEA372EAA12F60070100D /* Github_ActionsApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A111DEEC2EA0FC4E00276835 /* Github_Actions */ = {
+		A17FEA392EAA12F60070100D /* Github_ActionsApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Github_Actions;
+			exceptions = (
+				A17FEA452EAA13540070100D /* Exceptions for "Github_ActionsApp" folder in "Github_ActionsApp" target */,
+			);
+			path = Github_ActionsApp;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,13 +49,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A17FEA352EAA12F60070100D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		A111DEE12EA0FC4E00276835 = {
 			isa = PBXGroup;
 			children = (
-				A111DEEC2EA0FC4E00276835 /* Github_Actions */,
+				A18941E12EA9962400FF5C55 /* DrinksView */,
+				A17FEA392EAA12F60070100D /* Github_ActionsApp */,
 				A111DEEB2EA0FC4E00276835 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +72,18 @@
 			isa = PBXGroup;
 			children = (
 				A111DEEA2EA0FC4E00276835 /* Github_Actions.app */,
+				A17FEA382EAA12F60070100D /* Github_ActionsApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A18941E12EA9962400FF5C55 /* DrinksView */ = {
+			isa = PBXGroup;
+			children = (
+				A18941E32EA9964200FF5C55 /* ContentDetailView.swift */,
+				A18941E22EA9963400FF5C55 /* ContentView.swift */,
+			);
+			path = DrinksView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -60,14 +101,33 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				A111DEEC2EA0FC4E00276835 /* Github_Actions */,
-			);
 			name = Github_Actions;
 			packageProductDependencies = (
 			);
 			productName = Github_Actions;
 			productReference = A111DEEA2EA0FC4E00276835 /* Github_Actions.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A17FEA372EAA12F60070100D /* Github_ActionsApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A17FEA402EAA12F80070100D /* Build configuration list for PBXNativeTarget "Github_ActionsApp" */;
+			buildPhases = (
+				A17FEA342EAA12F60070100D /* Sources */,
+				A17FEA352EAA12F60070100D /* Frameworks */,
+				A17FEA362EAA12F60070100D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A17FEA392EAA12F60070100D /* Github_ActionsApp */,
+			);
+			name = Github_ActionsApp;
+			packageProductDependencies = (
+			);
+			productName = Github_ActionsApp;
+			productReference = A17FEA382EAA12F60070100D /* Github_ActionsApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -81,6 +141,10 @@
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					A111DEE92EA0FC4E00276835 = {
+						CreatedOnToolsVersion = 16.4;
+						LastSwiftMigration = 1640;
+					};
+					A17FEA372EAA12F60070100D = {
 						CreatedOnToolsVersion = 16.4;
 					};
 				};
@@ -100,12 +164,20 @@
 			projectRoot = "";
 			targets = (
 				A111DEE92EA0FC4E00276835 /* Github_Actions */,
+				A17FEA372EAA12F60070100D /* Github_ActionsApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A111DEE82EA0FC4E00276835 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A17FEA362EAA12F60070100D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,6 +191,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A17FEA312EAA101A0070100D /* ContentDetailView.swift in Sources */,
+				A17FEA322EAA101A0070100D /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A17FEA342EAA12F60070100D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A17FEA432EAA134D0070100D /* ContentDetailView.swift in Sources */,
+				A17FEA442EAA134D0070100D /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +334,37 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 327M37XF2W;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tugberkacabey.Github-Actions";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A111DEF72EA0FC5000276835 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 327M37XF2W;
@@ -272,9 +386,9 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Debug;
+			name = Release;
 		};
-		A111DEF72EA0FC5000276835 /* Release */ = {
+		A17FEA412EAA12F80070100D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -294,7 +408,35 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.tugberkacabey.Github-Actions";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tugberkacabey.Github-Actions.Github-ActionsApp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A17FEA422EAA12F80070100D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 327M37XF2W;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tugberkacabey.Github-Actions.Github-ActionsApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -319,6 +461,15 @@
 			buildConfigurations = (
 				A111DEF62EA0FC5000276835 /* Debug */,
 				A111DEF72EA0FC5000276835 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A17FEA402EAA12F80070100D /* Build configuration list for PBXNativeTarget "Github_ActionsApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A17FEA412EAA12F80070100D /* Debug */,
+				A17FEA422EAA12F80070100D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
