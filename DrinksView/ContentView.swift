@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// FIRST PAGE
+// FIRST PAGE SHOPPİNG
 struct ContentView: View {
     @State private var drinks = ["Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper"]
     
@@ -29,6 +29,7 @@ struct ContentView: View {
             }
         }
     }
+    
     func deleteItem(at offsets: IndexSet) {
         drinks.remove(atOffsets: offsets)
     }
