@@ -1,0 +1,88 @@
+name: Auto Merge Workflow
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: write
+  checks: read
+  statuses: read
+
+jobs:
+  auto-merge:
+    name: Auto Merge for Matching Branches
+    runs-on: ubuntu-latest
+
+    if: |
+      github.event.pull_request.draft == false &&
+      contains(github.event.pull_request.head.ref, 'abc/aaa/')
+
+    steps:
+      - name: Extract PR Info
+        id: pr
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+          echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+
+      - name: Log PR Summary
+        run: |
+          echo "🟣 PR #${PR_NUMBER}"
+          echo "🔹 Source Branch: ${PR_BRANCH}"
+          echo "🔹 Target Branch: ${BASE_BRANCH}"
+          echo "🔹 Auto-merge pattern matched"
+
+      - name: Wait for all required checks to be successful
+        id: checks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+
+            // Combined status -> SUCCESS / FAILURE / PENDING
+            const status = await github.rest.repos.getCombinedStatusForRef({
+              owner,
+              repo,
+              ref: pr.head.sha,
+            });
+
+            console.log("🟡 Combined Status:", status.data.state);
+
+            if (status.data.state !== "success") {
+              core.setFailed("⛔ All required checks are NOT successful yet.");
+            } else {
+              console.log("🟢 All required checks SUCCESS.");
+            }
+
+      - name: Confirm PR is mergeable
+        id: mergeable
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            if (!pr.mergeable) {
+              core.setFailed("⛔ PR is not mergeable (conflicts or restrictions).");
+            } else {
+              console.log("🟢 PR mergeable.");
+            }
+
+      - name: Auto Merge PR (Squash)
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+
+            await github.rest.pulls.merge({
+              owner,
+              repo,
+              pull_number: pr.number,
+              merge_method: "squash"
+            });
+
+            console.log(`✅ Successfully auto-merged PR #${pr.number}`);
