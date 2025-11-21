@@ -1,0 +1,11 @@
+name: Basic CI Check
+
+on:
+  pull_request:
+
+jobs:
+  basic-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run basic CI test
+        run: echo "CI OK"
