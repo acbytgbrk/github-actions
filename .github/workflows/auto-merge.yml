@@ -1,34 +1,91 @@
-name: Auto Merge
+name: Conditional Auto Merge
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, synchronize, reopened]
 
 permissions:
+  contents: write
   pull-requests: write
 
 jobs:
-  auto-merge:
+  check-and-merge:
     runs-on: ubuntu-latest
 
-    if: >
-      github.event.pull_request.draft == false &&
-      startsWith(github.event.pull_request.head.ref, 'abc/aaa/')
+    if: startsWith(github.event.pull_request.head.ref, 'abc/aaa/')
 
     steps:
-      - name: Enable GitHub Auto-Merge
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.base_ref }}
+
+      - name: Check .env changes
+        id: check
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
+
+          SAFE=true
+          HAS_ENV=false
+
+          while IFS= read -r file; do
+            if [[ "$file" == *.md ]]; then
+              continue
+            elif [[ "$file" == ".env" ]]; then
+              HAS_ENV=true
+            else
+              SAFE=false
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [[ "$SAFE" == "false" ]]; then
+            echo "SHOULD_MERGE=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$HAS_ENV" == "false" ]]; then
+            echo "SHOULD_MERGE=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BAD=$(git diff -U0 origin/${{ github.base_ref }} HEAD -- .env | \
+            grep '^[+-]' | grep -vE '^(\+\+\+|---)' | \
+            grep -vE 'FINANCE_CRYPTOKIT_VERSION|FINANCE_VERSION')
+
+          if [[ -n "$BAD" ]]; then
+            echo "SHOULD_MERGE=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "SHOULD_MERGE=true" >> "$GITHUB_OUTPUT"
+
+      - name: Approve PR
+        if: steps.check.outputs.SHOULD_MERGE == 'true'
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = context.payload.pull_request;
-            const { owner, repo } = context.repo;
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: "APPROVE",
+              body: "Auto-approved by workflow"
+            });
 
-            // Önce PR’ın auto-merge özelliğini aç
-            await github.rest.pulls.enableAutoMerge({
-              owner,
-              repo,
-              pull_number: pr.number,
+      - name: Merge PR
+        if: steps.check.outputs.SHOULD_MERGE == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
               merge_method: "squash"
             });
 
-            console.log(`🚀 Auto-merge enabled for PR #${pr.number}`);
+            console.log("✔ PR automatically merged.");
