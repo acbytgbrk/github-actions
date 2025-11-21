@@ -11,6 +11,7 @@ import SwiftUI
 // auto merge workflow test - synchronize trigger
 // trigger auto merge after CI added
 // update auto merge.yml
+// update 
 struct ContentView: View {
     @State private var drinks = ["Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper"]
     
