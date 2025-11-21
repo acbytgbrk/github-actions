@@ -1,51 +1,69 @@
 name: Auto Merge Workflow
 
 on:
-  workflow_run:
-    workflows: ["Basic CI Check"]
-    types: [completed]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
   pull-requests: write
-  contents: write
+  contents: read
+  checks: read
+  statuses: read
 
 jobs:
   auto-merge:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
+    if: |
+      github.event.pull_request.draft == false &&
+      startsWith(github.event.pull_request.head.ref, 'abc/aaa/')
+
     steps:
-      - name: Get PR Info
+
+      - name: Get PR info
         id: pr
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+
+      - name: Wait for required checks
+        id: check
         uses: actions/github-script@v7
         with:
           script: |
-            const run = context.payload.workflow_run;
-
-            if (!run.pull_requests || run.pull_requests.length === 0) {
-              core.setFailed("❌ No PR associated with this workflow_run.");
-              return;
-            }
-
-            const pr = run.pull_requests[0];
-            core.setOutput("number", pr.number);
-            core.setOutput("ref", pr.head.ref);
-
-      - name: Check branch prefix
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const branch = "${{ steps.pr.outputs.ref }}";
-            if (!branch.startsWith("abc/aaa/")) {
-              core.setFailed(`❌ Branch ${branch} does not match prefix abc/aaa/`);
-            }
-
-      - name: Merge PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const prNumber = Number("${{ steps.pr.outputs.number }}");
             const { owner, repo } = context.repo;
+            const sha = process.env.PR_SHA;
+
+            const status = await github.rest.repos.getCombinedStatusForRef({
+              owner, repo, ref: sha
+            });
+
+            core.info("Combined state: " + status.data.state);
+
+            if (status.data.state !== "success") {
+              core.setFailed("Required checks NOT finished or NOT successful.");
+            }
+
+      - name: Ensure PR is mergeable
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            if (!pr.mergeable) {
+              core.setFailed("PR not mergeable yet.");
+            } else {
+              core.info("PR mergeable. Proceeding...");
+            }
+
+      - name: Auto-merge PR
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
 
             await github.rest.pulls.merge({
               owner,
@@ -54,4 +72,4 @@ jobs:
               merge_method: "squash"
             });
 
-            console.log(`🎉 Successfully auto-merged PR #${prNumber}`);
+            core.info(`Merged PR #${prNumber}`);
