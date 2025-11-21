@@ -14,29 +14,31 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
 
-    if: |
+    if: >
       github.event.pull_request.draft == false &&
       startsWith(github.event.pull_request.head.ref, 'abc/aaa/')
 
     steps:
-
-      - name: Get PR info
+      - name: Collect PR info
         id: pr
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           echo "PR_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
 
-      - name: Wait for required checks
-        id: check
+      - name: Wait for ALL checks to succeed
+        id: check_status
         uses: actions/github-script@v7
         with:
           script: |
             const { owner, repo } = context.repo;
             const sha = process.env.PR_SHA;
 
+            // GitHub combined status (SUCCESS / FAILURE / PENDING)
             const status = await github.rest.repos.getCombinedStatusForRef({
-              owner, repo, ref: sha
+              owner,
+              repo,
+              ref: sha
             });
 
             core.info("Combined state: " + status.data.state);
@@ -45,14 +47,15 @@ jobs:
               core.setFailed("Required checks NOT finished or NOT successful.");
             }
 
-      - name: Ensure PR is mergeable
+      - name: Verify PR mergeable
+        id: mergeable
         uses: actions/github-script@v7
         with:
           script: |
             const pr = context.payload.pull_request;
 
-            if (!pr.mergeable) {
-              core.setFailed("PR not mergeable yet.");
+            if (pr.mergeable === false) {
+              core.setFailed("PR is not mergeable (probably conflicts).");
             } else {
               core.info("PR mergeable. Proceeding...");
             }
@@ -63,7 +66,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = Number(process.env.PR_NUMBER);
 
             await github.rest.pulls.merge({
               owner,
@@ -72,4 +75,4 @@ jobs:
               merge_method: "squash"
             });
 
-            core.info(`Merged PR #${prNumber}`);
+            core.info(`🎉 Successfully auto-merged PR #${prNumber}!`);
