@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-
-// FIRST PAGE SHOPPİNG
+// trigger workflow
 struct ContentView: View {
     @State private var drinks = ["Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper"]
     
