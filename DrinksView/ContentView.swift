@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-// test
-// test
+// test v2
 // FIRST PAGE SHOPPİNG
 struct ContentView: View {
     @State private var drinks = ["Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper"]
