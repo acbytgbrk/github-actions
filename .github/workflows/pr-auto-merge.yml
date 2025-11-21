@@ -7,8 +7,6 @@ on:
 permissions:
   pull-requests: write
   contents: write
-  checks: read
-  statuses: read
 
 jobs:
   auto-merge:
@@ -20,69 +18,60 @@ jobs:
       contains(github.event.pull_request.head.ref, 'abc/aaa/')
 
     steps:
-      - name: Extract PR Info
-        id: pr
+      - name: Log PR Info
         run: |
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
-          echo "BASE_BRANCH=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+          echo "PR #: ${{ github.event.pull_request.number }}"
+          echo "Branch: ${{ github.event.pull_request.head.ref }}"
 
-      - name: Log PR Summary
-        run: |
-          echo "🟣 PR #${PR_NUMBER}"
-          echo "🔹 Source Branch: ${PR_BRANCH}"
-          echo "🔹 Target Branch: ${BASE_BRANCH}"
-          echo "🔹 Auto-merge pattern matched"
-
-      - name: Wait for all required checks to be successful
-        id: checks
+      - name: Wait for PR to become mergeable
         uses: actions/github-script@v7
+        id: wait_mergeable
         with:
           script: |
-            const pr = context.payload.pull_request;
             const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
 
-            // Combined status -> SUCCESS / FAILURE / PENDING
-            const status = await github.rest.repos.getCombinedStatusForRef({
-              owner,
-              repo,
-              ref: pr.head.sha,
-            });
+            let pr;
+            let attempts = 10;
 
-            console.log("🟡 Combined Status:", status.data.state);
+            while (attempts-- > 0) {
+              pr = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: prNumber,
+              });
 
-            if (status.data.state !== "success") {
-              core.setFailed("⛔ All required checks are NOT successful yet.");
-            } else {
-              console.log("🟢 All required checks SUCCESS.");
+              const state = pr.data.mergeable_state;
+              console.log("Current mergeable_state:", state);
+
+              if (state === "clean") {
+                console.log("🟢 PR is mergeable now.");
+                return;
+              }
+
+              if (state === "dirty") {
+                core.setFailed("❌ Merge conflict detected.");
+                return;
+              }
+
+              console.log("⏳ Waiting for checks to finish...");
+              await new Promise(r => setTimeout(r, 5000));
             }
 
-      - name: Confirm PR is mergeable
-        id: mergeable
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const pr = context.payload.pull_request;
+            core.setFailed("❌ Timeout: PR did not reach mergeable state.");
 
-            if (!pr.mergeable) {
-              core.setFailed("⛔ PR is not mergeable (conflicts or restrictions).");
-            } else {
-              console.log("🟢 PR mergeable.");
-            }
-
-      - name: Auto Merge PR (Squash)
+      - name: Auto-merge PR (Squash)
         if: success()
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = context.payload.pull_request;
             const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
 
             await github.rest.pulls.merge({
               owner,
               repo,
               pull_number: pr.number,
-              merge_method: "squash"
+              merge_method: "squash",
             });
-
             console.log(`✅ Successfully auto-merged PR #${pr.number}`);
