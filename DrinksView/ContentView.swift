@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+// auto merge test 2
 // FIRST PAGE SHOPPİNG
 struct ContentView: View {
     @State private var drinks = ["Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper"]
